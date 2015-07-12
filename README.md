@@ -25,7 +25,6 @@ This example will run kitchen **with Vagrant** in your workstation. You can use 
 ## Available Rake Tasks
 
     $ bundle exec rake -T
-    rake kitchen:destroy  # Destroy all running instances
     rake kitchen:docker   # Run integration tests with kitchen-docker
     rake kitchen:vagrant  # Run integration tests with kitchen-vagrant
 
