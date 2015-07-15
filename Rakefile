@@ -6,7 +6,7 @@
 require 'bundler/setup'
 
 desc 'Run Test Kitchen integration tests'
-namespace :kitchen do
+namespace :integration do
 
   desc 'Run integration tests with kitchen-vagrant'
   task :vagrant do
@@ -28,4 +28,4 @@ namespace :kitchen do
   end
 end
 
-task default: %w(kitchen:vagrant)
+task default: %w(integration:vagrant)

@@ -3,7 +3,7 @@ kitchen-travis-example Cookbook [![Build Status](http://img.shields.io/travis/zu
 
 Proof of concept cookbook to run [test-kitchen](http://kitchen.ci/) inside [Travis CI](https://travis-ci.org/) using [kitchen-docker](https://github.com/portertech/kitchen-docker) in [User Mode Linux](https://github.com/jpetazzo/sekexe).
 
-Look the [*.travis.yml*](https://github.com/zuazo/kitchen-travis-example-cookbook/blob/master/.travis.yml) and [*.kitchen.docker.yml*](https://github.com/zuazo/kitchen-travis-example-cookbook/blob/master/.kitchen.docker.yml) files to understand how this works.
+Look the [*.travis.yml*](https://github.com/zuazo/kitchen-travis-example-cookbook/blob/master/.travis.yml), [*.kitchen.docker.yml*](https://github.com/zuazo/kitchen-travis-example-cookbook/blob/master/.kitchen.docker.yml) and [*Rakefile*](https://github.com/zuazo/kitchen-travis-example-cookbook/blob/master/Rakefile) files to understand how this works.
 
 This example cookbook only installs nginx. It also includes some [Serverspec](http://serverspec.org/) tests to check everything is working correctly.
 
@@ -20,21 +20,279 @@ Then you can use [bundler](http://bundler.io/) to install the required ruby gems
 
     $ bundle exec rake
 
-This example will run kitchen **with Vagrant** in your workstation. You can use `$ bundle exec rake kitchen:docker` to run kitchen with Docker, as in Travis CI.
+This example will run kitchen **with Vagrant** in your workstation. You can use `$ bundle exec rake integration:docker` to run kitchen with Docker, as in Travis CI.
 
 ## Available Rake Tasks
 
     $ bundle exec rake -T
-    rake kitchen:docker   # Run integration tests with kitchen-docker
-    rake kitchen:vagrant  # Run integration tests with kitchen-vagrant
+    rake integration:docker   # Run integration tests with kitchen-docker
+    rake integration:vagrant  # Run integration tests with kitchen-vagrant
+
+## How to Implement This in My Cookbook
+
+First, create a `.kitchen.docker.yml` file with the platforms you want to test:
+
+```yaml
+---
+driver:
+  name: docker
+
+platforms:
+- name: centos-6.6
+  run_list:
+  - recipe[netstat]
+- name: ubuntu-14.04
+  run_list:
+  - recipe[apt]
+  - recipe[netstat]
+# [...]
+```
+
+If not defined, it will get the platforms from the main `.kitchen.yml` by default.
+
+You can get the list of the platforms officially supported by Docker [here](https://registry.hub.docker.com/repos/library).
+
+Then, I recommend you to create a task in your *Rakefile*:
+
+```ruby
+# Rakefile
+require 'bundler/setup'
+
+# [...]
+
+desc 'Run Test Kitchen integration tests'
+namespace :integration do
+  desc 'Run integration tests with kitchen-docker'
+  task :docker do
+    require 'kitchen'
+    Kitchen.logger = Kitchen.default_file_logger
+    @loader = Kitchen::Loader::YAML.new(local_config: '.kitchen.docker.yml')
+    Kitchen::Config.new(loader: @loader).instances.each do |instance|
+      instance.test(:always)
+    end
+  end
+end
+```
+
+This will allow us to use `$ bundle exec rake integration:docker` to run the tests.
+
+The *.travis.yml* file example:
+
+```yaml
+language: ruby
+
+rvm:
+- 1.9.3
+- 2.0.0
+- 2.1
+
+env:
+  global:
+  - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
+  - "HOST_IP=$(ip addr | awk '/scope global/ {print $2; exit}' | cut -d/ -f1)"
+  - DOCKER_HOST=tcp://$HOST_IP:2375
+  - DOCKER_PORT_RANGE=2400:2500
+  - SLIRP_PORTS=$(seq 2000 2500)
+
+before_install:
+- sudo sh -c "wget -qO- https://get.docker.io/gpg | apt-key add -"
+- sudo sh -c "echo deb https://get.docker.io/ubuntu docker main > /etc/apt/sources.list.d/docker.list"
+- echo exit 101 | sudo tee /usr/sbin/policy-rc.d
+- sudo chmod +x /usr/sbin/policy-rc.d
+- sudo apt-get -y update
+- sudo apt-get -y install lxc lxc-docker slirp
+- sudo sudo usermod -aG docker "$USER"
+- git clone git://github.com/cptactionhank/sekexe
+
+before_script:
+- "sekexe/run 'echo 2000 2500 > /proc/sys/net/ipv4/ip_local_port_range && mount -t tmpfs -o size=8g tmpfs /var/lib/docker && docker -d -H tcp://0.0.0.0:2375' &> docker_daemon.log &"
+- "while ! docker info &> /dev/null ; do sleep 1; done"
+- docker version
+
+script:
+- bundle exec rake integration:docker
+
+after_failure: cat docker_daemon.log
+```
+
+If you are using a *Gemfile*, you can add the following to it:
+
+```ruby
+# Gemfile
+
+group :integration do
+  gem 'test-kitchen', '~> 1.2'
+end
+
+group :docker do
+  gem 'kitchen-docker', '~> 2.1'
+end
+```
+
+This will be enough if you want to test only 2 or 3 platforms. If you want more, continue reading:
+
+### How to Run Test in Many Platforms
+
+Travis CI has a build time limitation of **50 minutes**. If you want to test many platforms, you will need to split up the tests in multiple Travis CI builds. For those cases, I recommend you to use a simple *Rakefile* Rake task similar to the following:
+
+```ruby
+# Rakefile
+require 'bundler/setup'
+
+# [...]
+
+desc 'Run Test Kitchen integration tests'
+namespace :integration do
+  desc 'Run Test Kitchen integration tests using docker'
+  task :docker do
+    ENV['KITCHEN_LOCAL_YAML'] = '.kitchen.docker.yml'
+    sh "kitchen test #{ENV['KITCHEN_ARGS']} #{ENV['KITCHEN_REGEXP']}"
+  end
+end
+```
+
+This will allow us to run different kitchen tests using the `KITCHEN_REGEXP` environment variable and tweak some arguments using the `KITCHEN_ARGS` environment variable.
+
+Then, you can use the following *.travis.yml* file:
+
+```yaml
+rvm:
+- 1.9.3
+- 2.0.0
+- 2.1
+
+env:
+  global:
+  - KITCHEN_ARGS="--concurrency=2 --destroy=always"
+  - "HOST_IP=$(ip addr | awk '/scope global/ {print $2; exit}' | cut -d/ -f1)"
+  - DOCKER_HOST=tcp://$HOST_IP:2375
+  - DOCKER_PORT_RANGE=2400:2500
+  - SLIRP_PORTS=$(seq 2000 2500)
+  matrix:
+# Split up the test-kitchen run to avoid exceeding 50 minutes:
+  - KITCHEN_REGEXP=centos
+  - KITCHEN_REGEXP=debian
+  - KITCHEN_REGEXP=ubuntu
+
+before_install:
+- sudo sh -c "wget -qO- https://get.docker.io/gpg | apt-key add -"
+- sudo sh -c "echo deb https://get.docker.io/ubuntu docker main > /etc/apt/sources.list.d/docker.list"
+- echo exit 101 | sudo tee /usr/sbin/policy-rc.d
+- sudo chmod +x /usr/sbin/policy-rc.d
+- sudo apt-get -y update
+- sudo apt-get -y install lxc lxc-docker slirp
+- sudo sudo usermod -aG docker "$USER"
+- git clone git://github.com/cptactionhank/sekexe
+
+before_script:
+- "sekexe/run 'echo 2000 2500 > /proc/sys/net/ipv4/ip_local_port_range && mount -t tmpfs -o size=8g tmpfs /var/lib/docker && docker -d -H tcp://0.0.0.0:2375' &> docker_daemon.log &"
+- "while ! docker info &> /dev/null ; do sleep 1; done"
+- docker version
+
+script:
+- bundle exec rake integration:docker
+
+after_failure: cat docker_daemon.log
+```
+
+These are the important changes:
+
+```yaml
+# [...]
+env:
+  global:
+  - KITCHEN_ARGS="--concurrency=2 --destroy=always"
+  # [...]
+  matrix:
+# Split up the test-kitchen run to avoid exceeding 50 minutes:
+  - KITCHEN_REGEXP=centos
+  - KITCHEN_REGEXP=debian
+  - KITCHEN_REGEXP=ubuntu
+# [...]
+
+script:
+- travis_retry bundle exec rake integration:docker
+```
 
 ## Known Issues
 
-* Many cookbooks may not work correctly on `centos-7` images: [Systemd removed in CentOS 7](https://github.com/docker-library/docs/tree/master/centos#systemd-integration)
+### The Test Can Not Exceed 50 Minutes
 
-## Feedback is Welcome
+Each test can not take more than 50 minutes to run within Travis CI. It's recommended to split the kitchen run in multiple builds using the [Travis CI build matrix](http://docs.travis-ci.com/user/customizing-the-build/#build-matrix).
 
-Currently I'm using this for my own (small) projects. It may not work correctly in many cases. If you use this or a similar approach successfully with other cookbooks, please [open an issue and let me know about your experience](https://github.com/zuazo/kitchen-travis-example-cookbook/issues/new). Problems, discussions and ideas for improvement, of course, are also welcome.
+Look at the examples in this documentation to learn how to avoid this.
+
+### Official CentOS 7 and Fedora Images
+
+Cookbooks requiring [systemd](http://www.freedesktop.org/wiki/Software/systemd/) may not work correctly on CentOS 7 and Fedora containers. See [*Systemd removed in CentOS 7*](https://github.com/docker-library/docs/tree/master/centos#systemd-integration).
+
+You can use alternative images that come with systemd and run the containers in **privileged** mode:
+
+```yaml
+# .kitchen.docker.yml
+
+# Non-official images with systemd
+- name: centos-7
+  driver_config:
+    # https://registry.hub.docker.com/u/milcom/centos7-systemd/dockerfile/
+    image: milcom/centos7-systemd
+    privileged: true
+- name: systemd
+  driver_config:
+    image: fedora/systemd-systemd
+    privileged: true
+```
+
+### Problems with Upstart in Ubuntu
+
+Some cookbooks requiring [Ubuntu Upstart](http://upstart.ubuntu.com/) may not work correctly.
+
+You can use the official Ubuntu images with Upstart enabled:
+
+```yaml
+# .kichen.docker.yml
+
+- name: ubuntu-14.10
+  run_list: recipe[apt]
+  driver_config:
+    image: ubuntu-upstart:14.10
+```
+
+### Install `netstat` Package
+
+It's recommended to install `net-tools` on some containers if you want to test listening ports with Serverspec. This is because some images come without `netstat` installed.
+
+This is required for example for the following Serverspec test:
+
+```ruby
+# test/integration/default/serverspec/default_spec.rb
+describe port(80) do
+  it { should be_listening }
+end
+```
+
+You can ensure that `netstat` is properly installed running the `netstat` cookbook:
+
+ ```yaml
+# .kitchen.docker.yml
+
+- name: debian-6
+  run_list:
+  - recipe[apt]
+  - recipe[netstat]
+```
+
+## Real-world Examples
+
+* [netstat](https://github.com/zuazo/netstat-cookbook) cookbook ([*.travis.yml*](https://github.com/zuazo/netstat-cookbook/blob/master/.travis.yml), [*.kitchen.docker.yml*](https://github.com/zuazo/netstat-cookbook/blob/master/.kitchen.docker.yml), [*Rakefile*](https://github.com/zuazo/netstat-cookbook/blob/master/Rakefile)): Runs kitchen tests against many platforms. Includes a minimal Serverspec test.
+
+* [opendkim](https://github.com/onddo/opendkim-cookbook) cookbook ([*.travis.yml*](https://github.com/onddo/opendkim-cookbook/blob/master/.travis.yml), [*.kitchen.docker.yml*](https://github.com/onddo/opendkim-cookbook/blob/master/.kitchen.docker.yml), [*Rakefile*](https://github.com/onddo/opendkim-cookbook/blob/master/Rakefile)): Runs kitchen tests in different Travis builds separated by platform. Includes Serverspec tests.
+
+* [dovecot](https://github.com/onddo/dovecot-cookbook) cookbook ([*.travis.yml*](https://github.com/onddo/dovecot-cookbook/blob/master/.travis.yml), [*.kitchen.docker.yml*](https://github.com/onddo/dovecot-cookbook/blob/master/.kitchen.docker.yml), [*Rakefile*](https://github.com/onddo/dovecot-cookbook/blob/master/Rakefile)): Runs kitchen tests in different Travis builds separated by suite. Includes Serverspec and bats tests.
+
+## Feedback Is Welcome
+
+Currently I'm using this for my own projects. It may not work correctly in many cases. If you use this or a similar approach successfully with other cookbooks, please [open an issue and let me know about your experience](https://github.com/zuazo/kitchen-travis-example-cookbook/issues/new). Problems, discussions and ideas for improvement, of course, are also welcome.
 
 # License and Author
 

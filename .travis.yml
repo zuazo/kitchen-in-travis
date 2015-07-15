@@ -31,6 +31,6 @@ before_script:
 bundler_args: --without vagrant
 
 script:
-- bundle exec rake kitchen:docker
+- bundle exec rake integration:docker
 
 after_failure: cat docker_daemon.log
