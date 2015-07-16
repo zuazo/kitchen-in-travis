@@ -19,7 +19,7 @@ script:
 - KITCHEN_LOCAL_YAML=.kitchen.docker.yml bundle exec kitchen test
 ```
 
-Look below for more complete examples.
+Look [below](https://github.com/zuazo/kitchen-in-travis#how-to-implement-this-in-my-cookbook) for more complete examples.
 
 The following files will help you understand how this works:
 
