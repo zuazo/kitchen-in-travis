@@ -21,7 +21,8 @@ script:
 
 Look below for more complete examples.
 
-Look the following files to understand how this works:
+The following files will help you understand how this works:
+
 * [*.travis.yml*](https://github.com/zuazo/kitchen-in-travis/blob/master/.travis.yml)
 * [*scripts/start_docker.sh*](https://github.com/zuazo/kitchen-in-travis/blob/master/scripts/start_docker.sh): Starts [Docker Engine](https://www.docker.com/docker-engine) inside Travis CI.
 * [*.kitchen.docker.yml*](https://github.com/zuazo/kitchen-in-travis/blob/master/.kitchen.docker.yml)
