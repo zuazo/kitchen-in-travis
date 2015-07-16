@@ -40,11 +40,9 @@ driver:
 platforms:
 - name: centos-6.6
   run_list:
-  - recipe[netstat]
 - name: ubuntu-14.04
   run_list:
   - recipe[apt]
-  - recipe[netstat]
 # [...]
 ```
 
@@ -82,37 +80,15 @@ The *.travis.yml* file example:
 language: ruby
 
 rvm:
-- 1.9.3
-- 2.0.0
+- 2.0
 - 2.1
-
-env:
-  global:
-  - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
-  - "HOST_IP=$(ip addr | awk '/scope global/ {print $2; exit}' | cut -d/ -f1)"
-  - DOCKER_HOST=tcp://$HOST_IP:2375
-  - DOCKER_PORT_RANGE=2400:2500
-  - SLIRP_PORTS=$(seq 2000 2500)
-
-before_install:
-- sudo sh -c "wget -qO- https://get.docker.io/gpg | apt-key add -"
-- sudo sh -c "echo deb https://get.docker.io/ubuntu docker main > /etc/apt/sources.list.d/docker.list"
-- echo exit 101 | sudo tee /usr/sbin/policy-rc.d
-- sudo chmod +x /usr/sbin/policy-rc.d
-- sudo apt-get -y update
-- sudo apt-get -y install lxc lxc-docker slirp
-- sudo sudo usermod -aG docker "$USER"
-- git clone git://github.com/cptactionhank/sekexe
+- 2.2
 
 before_script:
-- "sekexe/run 'echo 2000 2500 > /proc/sys/net/ipv4/ip_local_port_range && mount -t tmpfs -o size=8g tmpfs /var/lib/docker && docker -d -H tcp://0.0.0.0:2375' &> docker_daemon.log &"
-- "while ! docker info &> /dev/null ; do sleep 1; done"
-- docker version
+- source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-travis-example-cookbook/master/scripts/start_docker.sh)
 
 script:
 - bundle exec rake integration:docker
-
-after_failure: cat docker_daemon.log
 ```
 
 If you are using a *Gemfile*, you can add the following to it:
@@ -157,61 +133,24 @@ Then, you can use the following *.travis.yml* file:
 
 ```yaml
 rvm:
-- 1.9.3
-- 2.0.0
+- 2.0
 - 2.1
+- 2.2
 
 env:
   global:
   - KITCHEN_ARGS="--concurrency=2 --destroy=always"
-  - "HOST_IP=$(ip addr | awk '/scope global/ {print $2; exit}' | cut -d/ -f1)"
-  - DOCKER_HOST=tcp://$HOST_IP:2375
-  - DOCKER_PORT_RANGE=2400:2500
-  - SLIRP_PORTS=$(seq 2000 2500)
   matrix:
 # Split up the test-kitchen run to avoid exceeding 50 minutes:
   - KITCHEN_REGEXP=centos
   - KITCHEN_REGEXP=debian
   - KITCHEN_REGEXP=ubuntu
 
-before_install:
-- sudo sh -c "wget -qO- https://get.docker.io/gpg | apt-key add -"
-- sudo sh -c "echo deb https://get.docker.io/ubuntu docker main > /etc/apt/sources.list.d/docker.list"
-- echo exit 101 | sudo tee /usr/sbin/policy-rc.d
-- sudo chmod +x /usr/sbin/policy-rc.d
-- sudo apt-get -y update
-- sudo apt-get -y install lxc lxc-docker slirp
-- sudo sudo usermod -aG docker "$USER"
-- git clone git://github.com/cptactionhank/sekexe
-
 before_script:
-- "sekexe/run 'echo 2000 2500 > /proc/sys/net/ipv4/ip_local_port_range && mount -t tmpfs -o size=8g tmpfs /var/lib/docker && docker -d -H tcp://0.0.0.0:2375' &> docker_daemon.log &"
-- "while ! docker info &> /dev/null ; do sleep 1; done"
-- docker version
+- source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-travis-example-cookbook/master/scripts/start_docker.sh)
 
 script:
 - bundle exec rake integration:docker
-
-after_failure: cat docker_daemon.log
-```
-
-These are the important changes:
-
-```yaml
-# [...]
-env:
-  global:
-  - KITCHEN_ARGS="--concurrency=2 --destroy=always"
-  # [...]
-  matrix:
-# Split up the test-kitchen run to avoid exceeding 50 minutes:
-  - KITCHEN_REGEXP=centos
-  - KITCHEN_REGEXP=debian
-  - KITCHEN_REGEXP=ubuntu
-# [...]
-
-script:
-- travis_retry bundle exec rake integration:docker
 ```
 
 ## Known Issues
@@ -226,7 +165,7 @@ Look at the examples in this documentation to learn how to avoid this.
 
 Cookbooks requiring [systemd](http://www.freedesktop.org/wiki/Software/systemd/) may not work correctly on CentOS 7 and Fedora containers. See [*Systemd removed in CentOS 7*](https://github.com/docker-library/docs/tree/master/centos#systemd-integration).
 
-You can use alternative images that come with systemd and run the containers in **privileged** mode:
+You can use alternative images that include systemd. These containers must run in **privileged** mode:
 
 ```yaml
 # .kitchen.docker.yml
