@@ -1,5 +1,9 @@
 #!/bin/bash
 
+#
+# Installs and starts Docker Engine inside Travis CI using User Mode Linux
+#
+
 # Exit immediately if a simple command exits with a non-zero status
 set -e
 

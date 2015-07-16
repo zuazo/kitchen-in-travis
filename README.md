@@ -3,7 +3,11 @@ kitchen-in-travis Cookbook [![Build Status](http://img.shields.io/travis/zuazo/k
 
 Proof of concept cookbook to run [test-kitchen](http://kitchen.ci/) inside [Travis CI](https://travis-ci.org/) using [kitchen-docker](https://github.com/portertech/kitchen-docker) in [User Mode Linux](https://github.com/jpetazzo/sekexe).
 
-Look the [*.travis.yml*](https://github.com/zuazo/kitchen-in-travis/blob/master/.travis.yml), [*.kitchen.docker.yml*](https://github.com/zuazo/kitchen-in-travis/blob/master/.kitchen.docker.yml) and [*Rakefile*](https://github.com/zuazo/kitchen-in-travis/blob/master/Rakefile) files to understand how this works.
+Look the following files to understand how this works:
+* [*.travis.yml*](https://github.com/zuazo/kitchen-in-travis/blob/master/.travis.yml)
+* [*scripts/start_docker.sh*](https://github.com/zuazo/kitchen-in-travis/blob/master/scripts/start_docker.sh): Starts [Docker Engine](https://www.docker.com/docker-engine) inside Travis CI.
+* [*.kitchen.docker.yml*](https://github.com/zuazo/kitchen-in-travis/blob/master/.kitchen.docker.yml)
+* [*Rakefile*](https://github.com/zuazo/kitchen-in-travis/blob/master/Rakefile)
 
 This example cookbook only installs nginx. It also includes some [Serverspec](http://serverspec.org/) tests to check everything is working correctly.
 
