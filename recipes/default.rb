@@ -1,5 +1,5 @@
 #
-# Cookbook Name:: kitchen-travis-example
+# Cookbook Name:: kitchen-in-travis
 # Recipe:: default
 #
 # Copyright 2015, Xabier de Zuazo

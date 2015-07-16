@@ -12,4 +12,4 @@ platforms:
 
 suites:
 - name: default
-  run_list: recipe[kitchen-travis-example]
+  run_list: recipe[kitchen-in-travis]

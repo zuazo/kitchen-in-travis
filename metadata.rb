@@ -1,4 +1,4 @@
-name 'kitchen-travis-example'
+name 'kitchen-in-travis'
 maintainer 'Xabier de Zuazo'
 maintainer_email 'xabier@zuazo.org'
 license 'Apache 2.0'

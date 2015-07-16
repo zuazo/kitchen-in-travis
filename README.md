@@ -1,9 +1,9 @@
-kitchen-travis-example Cookbook [![Build Status](http://img.shields.io/travis/zuazo/kitchen-travis-example-cookbook/master.svg?style=flat)](https://travis-ci.org/zuazo/kitchen-travis-example-cookbook)
-===============================
+kitchen-in-travis Cookbook [![Build Status](http://img.shields.io/travis/zuazo/kitchen-in-travis/master.svg?style=flat)](https://travis-ci.org/zuazo/kitchen-in-travis)
+==========================
 
 Proof of concept cookbook to run [test-kitchen](http://kitchen.ci/) inside [Travis CI](https://travis-ci.org/) using [kitchen-docker](https://github.com/portertech/kitchen-docker) in [User Mode Linux](https://github.com/jpetazzo/sekexe).
 
-Look the [*.travis.yml*](https://github.com/zuazo/kitchen-travis-example-cookbook/blob/master/.travis.yml), [*.kitchen.docker.yml*](https://github.com/zuazo/kitchen-travis-example-cookbook/blob/master/.kitchen.docker.yml) and [*Rakefile*](https://github.com/zuazo/kitchen-travis-example-cookbook/blob/master/Rakefile) files to understand how this works.
+Look the [*.travis.yml*](https://github.com/zuazo/kitchen-in-travis/blob/master/.travis.yml), [*.kitchen.docker.yml*](https://github.com/zuazo/kitchen-in-travis/blob/master/.kitchen.docker.yml) and [*Rakefile*](https://github.com/zuazo/kitchen-in-travis/blob/master/Rakefile) files to understand how this works.
 
 This example cookbook only installs nginx. It also includes some [Serverspec](http://serverspec.org/) tests to check everything is working correctly.
 
@@ -85,7 +85,7 @@ rvm:
 - 2.2
 
 before_script:
-- source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-travis-example-cookbook/master/scripts/start_docker.sh)
+- source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/master/scripts/start_docker.sh)
 
 script:
 - bundle exec rake integration:docker
@@ -147,7 +147,7 @@ env:
   - KITCHEN_REGEXP=ubuntu
 
 before_script:
-- source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-travis-example-cookbook/master/scripts/start_docker.sh)
+- source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/master/scripts/start_docker.sh)
 
 script:
 - bundle exec rake integration:docker
@@ -231,7 +231,7 @@ You can ensure that `netstat` is properly installed running the `netstat` cookbo
 
 ## Feedback Is Welcome
 
-Currently I'm using this for my own projects. It may not work correctly in many cases. If you use this or a similar approach successfully with other cookbooks, please [open an issue and let me know about your experience](https://github.com/zuazo/kitchen-travis-example-cookbook/issues/new). Problems, discussions and ideas for improvement, of course, are also welcome.
+Currently I'm using this for my own projects. It may not work correctly in many cases. If you use this or a similar approach successfully with other cookbooks, please [open an issue and let me know about your experience](https://github.com/zuazo/kitchen-in-travis/issues/new). Problems, discussions and ideas for improvement, of course, are also welcome.
 
 # License and Author
 
