@@ -111,7 +111,7 @@ end
 
 This will be enough if you want to test only 2 or 3 platforms. If you want more, continue reading:
 
-### How to Run Test in Many Platforms
+### How to Run Tests in Many Platforms
 
 Travis CI has a build time limitation of **50 minutes**. If you want to test many platforms, you will need to split up the tests in multiple Travis CI builds. For those cases, I recommend you to use a simple *Rakefile* Rake task similar to the following:
 
@@ -159,7 +159,7 @@ script:
 
 ## Known Issues
 
-### The Test Can Not Exceed 50 Minutes
+### The Test Cannot Exceed 50 Minutes
 
 Each test can not take more than 50 minutes to run within Travis CI. It's recommended to split the kitchen run in multiple builds using the [Travis CI build matrix](http://docs.travis-ci.com/user/customizing-the-build/#build-matrix).
 
