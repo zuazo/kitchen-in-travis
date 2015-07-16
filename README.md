@@ -3,6 +3,24 @@ kitchen-in-travis Cookbook [![Build Status](http://img.shields.io/travis/zuazo/k
 
 Proof of concept cookbook to run [test-kitchen](http://kitchen.ci/) inside [Travis CI](https://travis-ci.org/) using [kitchen-docker](https://github.com/portertech/kitchen-docker) in [User Mode Linux](https://github.com/jpetazzo/sekexe).
 
+You can use this in your cookbook by using a *.travis.yml* file similar to the following:
+
+```yaml
+language: ruby
+
+rvm:
+- 2.2
+
+before_script:
+- source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/0.1.0/scripts/start_docker.sh)
+
+script:
+# Run test-kitchen with docker driver, for example:
+- KITCHEN_LOCAL_YAML=.kitchen.docker.yml bundle exec kitchen test
+```
+
+Look below for more complete examples.
+
 Look the following files to understand how this works:
 * [*.travis.yml*](https://github.com/zuazo/kitchen-in-travis/blob/master/.travis.yml)
 * [*scripts/start_docker.sh*](https://github.com/zuazo/kitchen-in-travis/blob/master/scripts/start_docker.sh): Starts [Docker Engine](https://www.docker.com/docker-engine) inside Travis CI.
