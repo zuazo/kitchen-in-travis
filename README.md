@@ -6,8 +6,6 @@ Proof of concept cookbook to run [test-kitchen](http://kitchen.ci/) inside [Trav
 You can use this in your cookbook by using a *.travis.yml* file similar to the following:
 
 ```yaml
-language: ruby
-
 rvm:
 - 2.2
 
@@ -102,8 +100,6 @@ This will allow us to use `$ bundle exec rake integration:docker` to run the tes
 The *.travis.yml* file example:
 
 ```yaml
-language: ruby
-
 rvm:
 - 2.0
 - 2.1
@@ -159,8 +155,6 @@ This will allow us to run different kitchen tests using the `KITCHEN_REGEXP` env
 Then, you can use the following *.travis.yml* file:
 
 ```yaml
-language: ruby
-
 rvm:
 - 2.0
 - 2.1
