@@ -5,6 +5,8 @@ rvm:
 - 2.1
 - 2.2
 
+sudo: true
+
 env:
   global:
   - KITCHEN_LOCAL_YAML=.kitchen.docker.yml

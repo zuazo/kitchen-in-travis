@@ -11,6 +11,8 @@ language: ruby
 rvm:
 - 2.2
 
+sudo: true
+
 before_script:
 - source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/0.1.0/scripts/start_docker.sh)
 
@@ -107,6 +109,8 @@ rvm:
 - 2.1
 - 2.2
 
+sudo: true
+
 before_script:
 - source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/0.1.0/scripts/start_docker.sh)
 
@@ -155,10 +159,14 @@ This will allow us to run different kitchen tests using the `KITCHEN_REGEXP` env
 Then, you can use the following *.travis.yml* file:
 
 ```yaml
+language: ruby
+
 rvm:
 - 2.0
 - 2.1
 - 2.2
+
+sudo: true
 
 env:
   global:
