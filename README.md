@@ -124,7 +124,7 @@ group :integration do
 end
 
 group :docker do
-  gem 'kitchen-docker', '~> 2.1'
+  gem 'kitchen-docker', '~> 2.1.0'
 end
 ```
 
