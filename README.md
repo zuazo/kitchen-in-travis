@@ -254,6 +254,8 @@ You can ensure that `netstat` is properly installed running the `netstat` cookbo
 
 * [dovecot](https://github.com/onddo/dovecot-cookbook) cookbook ([*.travis.yml*](https://github.com/onddo/dovecot-cookbook/blob/master/.travis.yml), [*.kitchen.docker.yml*](https://github.com/onddo/dovecot-cookbook/blob/master/.kitchen.docker.yml), [*Rakefile*](https://github.com/onddo/dovecot-cookbook/blob/master/Rakefile)): Runs kitchen tests in different Travis builds separated by suite. Includes Serverspec and bats tests.
 
+* [dhcp](https://github.com/chef-brigade/dhcp-cookbook) cookbook ([*.travis.yml*](https://github.com/chef-brigade/dhcp-cookbook/blob/master/.travis.yml), [*.kitchen.docker.yml*](https://github.com/chef-brigade/dhcp-cookbook/blob/master/.kitchen.docker.yml), [*Rakefile*](https://github.com/chef-brigade/dhcp-cookbook/blob/master/Rakefile)): Runs kitchen tests in different Travis builds separated by distribution. Includes Serverspec and bats tests.
+
 ## Feedback Is Welcome
 
 Currently I'm using this for my own projects. It may not work correctly in many cases. If you use this or a similar approach successfully with other cookbooks, please [open an issue and let me know about your experience](https://github.com/zuazo/kitchen-in-travis/issues/new). Problems, discussions and ideas for improvement, of course, are also welcome.
@@ -263,6 +265,7 @@ Currently I'm using this for my own projects. It may not work correctly in many 
 |                      |                                          |
 |:---------------------|:-----------------------------------------|
 | **Author:**          | [Xabier de Zuazo](https://github.com/zuazo) (<xabier@zuazo.org>)
+| **Contributor:**     | [Jacob McCann](https://github.com/jmccann)
 | **Copyright:**       | Copyright (c) 2015, Xabier de Zuazo
 | **License:**         | Apache License, Version 2.0
 
