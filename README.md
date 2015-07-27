@@ -260,6 +260,10 @@ You can ensure that `netstat` is properly installed running the `netstat` cookbo
 
 Currently I'm using this for my own projects. It may not work correctly in many cases. If you use this or a similar approach successfully with other cookbooks, please [open an issue and let me know about your experience](https://github.com/zuazo/kitchen-in-travis/issues/new). Problems, discussions and ideas for improvement, of course, are also welcome.
 
+## Acknowledgements
+
+See [here](https://github.com/zuazo/docker-in-travis#acknowledgements).
+
 # License and Author
 
 |                      |                                          |
