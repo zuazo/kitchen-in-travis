@@ -257,7 +257,7 @@ Sometimes kitchen exits with the following error:
     >>>>>> Message: SSH session could not be established
     >>>>>> --------
 
-If you get this error on Travis CI, avoid passing the `--concurrency` option to test-kitchen. It does not work in some cases.
+If you get this error on Travis CI, avoid passing the `--concurrency` option to test-kitchen. It does not work in some cases. I recommend using [the Travis CI build matrix to run multiple tests concurrently](#how-to-run-tests-in-many-platforms).
 
 ### Travis CI Error: *No output has been received in the last 10 minutes*
 
