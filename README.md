@@ -164,7 +164,7 @@ sudo: true
 
 env:
   global:
-  - KITCHEN_ARGS="--concurrency=2 --destroy=always"
+  - KITCHEN_ARGS="--destroy=always"
   matrix:
 # Split up the test-kitchen run to avoid exceeding 50 minutes:
   - KITCHEN_REGEXP=centos
@@ -245,6 +245,23 @@ You can ensure that `netstat` is properly installed running the `netstat` cookbo
   - recipe[apt]
   - recipe[netstat]
 ```
+
+### Travis CI Error: *SSH session could not be established*
+
+Sometimes kitchen exits with the following error:
+
+    >>>>>> Converge failed on instance <default-debian-7>.
+    >>>>>> Please see .kitchen/logs/default-debian-7.log for more details
+    >>>>>> ------Exception-------
+    >>>>>> Class: Kitchen::ActionFailed
+    >>>>>> Message: SSH session could not be established
+    >>>>>> --------
+
+If you get this error on Travis CI, avoid passing the `--concurrency` option to test-kitchen. It does not work in some cases.
+
+### Travis CI Error: *No output has been received in the last 10 minutes*
+
+If a command can take a long time to run and is very quiet, you may need to run it with some flags to increase verbosity such as: `--verbose`, `--debug`, `--l debug`, ...
 
 ## Real-world Examples
 
