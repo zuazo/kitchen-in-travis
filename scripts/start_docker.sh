@@ -35,12 +35,13 @@ git clone git://github.com/cptactionhank/sekexe
 echo ''
 
 echo 'Starting Docker Engine'
-sekexe/run 'echo 2000 2500 > /proc/sys/net/ipv4/ip_local_port_range && mount -t tmpfs -o size=8g tmpfs /var/lib/docker && docker -d -H tcp://0.0.0.0:2375' &> docker_daemon.log &
+sekexe/run 'echo 2000 2500 > /proc/sys/net/ipv4/ip_local_port_range && mount -t tmpfs -o size=8g tmpfs /var/lib/docker && docker -d -H tcp://0.0.0.0:2375' 2>&1 | tee -a docker_daemon.log &
 echo ''
 
 echo 'Waiting Docker to start'
 while ! docker info &> /dev/null
 do
+  echo -n .
   sleep 1
 done
 echo ''
