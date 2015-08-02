@@ -9,10 +9,11 @@ set -e
 
 # Define some environment variables
 SLIRP_HOST="$(ip addr | awk '/scope global/ {print $2; exit}' | cut -d/ -f1)"
-DOCKER_HOST=tcp://$SLIRP_HOST:2375
+SLIRP_PORTS="$(seq 2000 2500)"
+DOCKER_HOST="tcp://${SLIRP_HOST}:2375"
 DOCKER_PORT_RANGE=2400:2500
-SLIRP_PORTS=$(seq 2000 2500)
 export SLIRP_HOST DOCKER_HOST DOCKER_PORT_RANGE SLIRP_PORTS
+
 echo "SLIRP_HOST=${SLIRP_HOST}"
 echo "DOCKER_HOST=${DOCKER_HOST}"
 echo "DOCKER_PORT_RANGE=${DOCKER_PORT_RANGE}"
@@ -30,7 +31,7 @@ echo ''
 echo 'Installing Docker'
 sudo apt-get -y update
 sudo apt-get -y install lxc lxc-docker slirp
-sudo sudo usermod -aG docker "$USER"
+sudo sudo usermod -aG docker "${USER}"
 echo ''
 
 echo 'Downloading User Mode Linux scripts'
@@ -42,7 +43,7 @@ sekexe/run 'echo 2000 2500 > /proc/sys/net/ipv4/ip_local_port_range && mount -t 
 echo ''
 
 echo 'Waiting Docker to start'
-while ! docker info &> /dev/null
+while ! docker info > /dev/null
 do
   echo -n .
   sleep 1
