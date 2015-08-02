@@ -8,17 +8,15 @@
 set -e
 
 # Define some environment variables
-HOST_IP="$(ip addr | awk '/scope global/ {print $2; exit}' | cut -d/ -f1)"
-DOCKER_HOST=tcp://$HOST_IP:2375
+SLIRP_HOST="$(ip addr | awk '/scope global/ {print $2; exit}' | cut -d/ -f1)"
+DOCKER_HOST=tcp://$SLIRP_HOST:2375
 DOCKER_PORT_RANGE=2400:2500
 SLIRP_PORTS=$(seq 2000 2500)
-export HOST_IP DOCKER_HOST DOCKER_PORT_RANGE SLIRP_PORTS
-
-echo '<Docker Script>'
-echo -ne '\e[33m'
-cat "${0}" | sed 's/^/  /'
-echo -ne '\e[0m'
-echo '</Docker Script>'
+export SLIRP_HOST DOCKER_HOST DOCKER_PORT_RANGE SLIRP_PORTS
+echo "SLIRP_HOST=${SLIRP_HOST}"
+echo "DOCKER_HOST=${DOCKER_HOST}"
+echo "DOCKER_PORT_RANGE=${DOCKER_PORT_RANGE}"
+echo "SLIRP_PORTS=${SLIRP_PORTS}"
 
 echo 'Installing docker repository'
 wget -qO- https://get.docker.io/gpg | sudo apt-key add -
@@ -52,4 +50,5 @@ do
 done
 echo ''
 
+echo 'Docker version:'
 docker version
