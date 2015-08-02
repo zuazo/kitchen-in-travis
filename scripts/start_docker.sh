@@ -16,7 +16,6 @@ export SLIRP_HOST DOCKER_HOST DOCKER_PORT_RANGE SLIRP_PORTS
 echo "SLIRP_HOST=${SLIRP_HOST}"
 echo "DOCKER_HOST=${DOCKER_HOST}"
 echo "DOCKER_PORT_RANGE=${DOCKER_PORT_RANGE}"
-echo "SLIRP_PORTS=${SLIRP_PORTS}"
 
 echo 'Installing docker repository'
 wget -qO- https://get.docker.io/gpg | sudo apt-key add -
