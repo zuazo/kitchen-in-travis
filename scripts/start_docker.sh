@@ -78,6 +78,11 @@ travis_fold start docker.start
 travis_fold end docker.start
 echo
 
+echo "DOCKER_HOST=${DOCKER_HOST}"
+echo "DOCKER_PORT_RANGE=${DOCKER_PORT_RANGE}"
+sudo netstat -putln
+sudo ps axu | grep 'docke[r]'
+
 travis_fold start docker.wait
   travis_section 'Waiting for Docker to start'
   while ! docker info > /dev/null
