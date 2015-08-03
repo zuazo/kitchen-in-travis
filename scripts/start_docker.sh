@@ -88,7 +88,7 @@ docker --version
 
 travis_fold start docker.wait
   travis_section 'Waiting for Docker to start'
-  while ! docker info > /dev/null
+  while ! curl "http://${SLIRP_HOST}:2375/info" > /dev/null
   do
     echo -n .
     sleep 1
