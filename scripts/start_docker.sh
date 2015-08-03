@@ -71,7 +71,7 @@ travis_fold start docker.start
   travis_section 'Starting Docker Engine'
   sekexe/run \
                'echo 2000 2500 > /proc/sys/net/ipv4/ip_local_port_range ' \
-               '&& mount -t tmpfs -o size=8g tmpfs /var/lib/docker ' \
+#                '&& mount -t tmpfs -o size=8g tmpfs /var/lib/docker ' \
                '&& docker -D -d -H tcp://0.0.0.0:2375' \
                2>&1 \
              | tee -a docker_daemon.log &
@@ -80,8 +80,12 @@ echo
 
 echo "DOCKER_HOST=${DOCKER_HOST}"
 echo "DOCKER_PORT_RANGE=${DOCKER_PORT_RANGE}"
+echo 'Network status:'
 sudo netstat -putln
+echo 'Process list:'
 sudo ps axu | grep 'docke[r]'
+echo 'Docker client version:'
+docker --version
 
 travis_fold start docker.wait
   travis_section 'Waiting for Docker to start'
