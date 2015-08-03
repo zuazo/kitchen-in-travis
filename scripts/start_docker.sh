@@ -22,7 +22,6 @@ then
 fi
 
 travis_section() {
-  echo
   echo -e "${ANSI_YELLOW}${*}${ANSI_RESET}"
 }
 
@@ -37,6 +36,7 @@ travis_fold start env.setup
   echo "DOCKER_HOST=${DOCKER_HOST}"
   echo "DOCKER_PORT_RANGE=${DOCKER_PORT_RANGE}"
 travis_fold end env.setup
+echo
 
 travis_fold start docker.repository.install
   travis_section 'Installing docker repository'
@@ -44,12 +44,14 @@ travis_fold start docker.repository.install
   echo 'deb https://get.docker.io/ubuntu docker main' \
     | sudo tee /etc/apt/sources.list.d/docker.list
 travis_fold end docker.repository.install
+echo
 
 travis_fold start apt.policy.setup
   travis_section 'Preventing APT from starting any service'
   echo exit 101 | sudo tee /usr/sbin/policy-rc.d
   sudo chmod +x /usr/sbin/policy-rc.d
 travis_fold end apt.policy.setup
+echo
 
 travis_fold start docker.install
   travis_section 'Installing Docker'
@@ -57,11 +59,13 @@ travis_fold start docker.install
   sudo apt-get -y install lxc lxc-docker slirp
   sudo sudo usermod -aG docker "${USER}"
 travis_fold end docker.install
+echo
 
 travis_fold start uml.download
   travis_section 'Downloading User Mode Linux scripts'
   travis_retry git clone git://github.com/cptactionhank/sekexe
 travis_fold end uml.download
+echo
 
 travis_fold start docker.start
   travis_section 'Starting Docker Engine'
@@ -72,6 +76,7 @@ travis_fold start docker.start
                2>&1 \
              | tee -a docker_daemon.log &
 travis_fold end docker.start
+echo
 
 travis_fold start docker.wait
   travis_section 'Waiting for Docker to start'
@@ -81,6 +86,7 @@ travis_fold start docker.wait
     sleep 1
   done
 travis_fold end docker.wait
+echo
 
 travis_section 'Docker version:'
 docker version
