@@ -72,6 +72,9 @@ travis_fold start docker.start
   sekexe/run \
                'echo 2000 2500 > /proc/sys/net/ipv4/ip_local_port_range ' \
                '&& docker -D -d -H tcp://0.0.0.0:2375' \
+               '&& sleep 5' \
+               '&& ps axu' \
+               '&& netstat -puatn' \
                2>&1 \
              | tee -a docker_daemon.log &
 travis_fold end docker.start
@@ -80,7 +83,7 @@ echo
 echo "DOCKER_HOST=${DOCKER_HOST}"
 echo "DOCKER_PORT_RANGE=${DOCKER_PORT_RANGE}"
 echo 'Network status:'
-sudo netstat -putln
+sudo netstat -puatn
 echo 'Process list:'
 sudo ps axu | grep 'docke[r]'
 echo 'Docker client version:'
