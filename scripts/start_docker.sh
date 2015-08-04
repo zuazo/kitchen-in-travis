@@ -71,9 +71,10 @@ travis_fold start docker.start
   travis_section 'Starting Docker Engine'
   sekexe/run \
                'echo 2000 2500 > /proc/sys/net/ipv4/ip_local_port_range ' \
-               '&& ifconfig -a' \
-               '&& ifconfig eth0 up' \
-               '&& ifconfig -a' \
+               '&& sleep 5 ' \
+               '&& ifconfig -a ' \
+               '&& ip link set eth0 up ' \
+               '&& ifconfig -a ' \
                '&& ( sleep 5 ' \
                     '&& ps axu ' \
                     '&& netstat -puatn & ) ' \
@@ -83,8 +84,6 @@ travis_fold start docker.start
 travis_fold end docker.start
 echo
 
-echo "DOCKER_HOST=${DOCKER_HOST}"
-echo "DOCKER_PORT_RANGE=${DOCKER_PORT_RANGE}"
 echo 'Network interfaces:'
 sudo /sbin/ifconfig -a
 echo 'Network status:'
