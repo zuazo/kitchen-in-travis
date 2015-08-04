@@ -71,7 +71,9 @@ travis_fold start docker.start
   travis_section 'Starting Docker Engine'
   sekexe/run \
                'echo 2000 2500 > /proc/sys/net/ipv4/ip_local_port_range ' \
-               '&& /sbin/ifconfig -a' \
+               '&& ifconfig -a' \
+               '&& ifconfig eth0 up' \
+               '&& ifconfig -a' \
                '&& ( sleep 5 ' \
                     '&& ps axu ' \
                     '&& netstat -puatn & ) ' \
