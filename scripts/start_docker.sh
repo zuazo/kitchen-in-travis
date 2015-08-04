@@ -71,6 +71,9 @@ travis_fold start docker.start
   travis_section 'Starting Docker Engine'
   sekexe/run \
                'echo 2000 2500 > /proc/sys/net/ipv4/ip_local_port_range ' \
+               '&& sysctl -w net.ipv6.conf.all.disable_ipv6=1' \
+               '&& sysctl -w net.ipv6.conf.default.disable_ipv6=1' \
+               '&& sysctl -w net.ipv6.conf.lo.disable_ipv6=1' \
                '&& ( sleep 5 ' \
                     '&& ps axu ' \
                     '&& netstat -puatn & ) ' \
