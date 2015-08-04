@@ -74,7 +74,7 @@ travis_fold start docker.start
                '&& ( sleep 5 ' \
                     '&& ps axu ' \
                     '&& netstat -puatn & ) ' \
-               '&& docker -D -d -H tcp://0.0.0.0:2375' \
+               '&& docker -D -d -H '"${DOCKER_HOST}" \
                2>&1 \
              | tee -a docker_daemon.log &
 travis_fold end docker.start
