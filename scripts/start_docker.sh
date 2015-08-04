@@ -72,18 +72,21 @@ travis_fold start docker.start
   sekexe/run \
                'echo 2000 2500 > /proc/sys/net/ipv4/ip_local_port_range ' \
                '&& sleep 5 ' \
-               '&& ifconfig -a ' \
-               '&& ip link set eth0 up ' \
-               '&& ifconfig -a ' \
-               '&& ( sleep 5 ' \
+               '; uname -a ' \
+               '; ifconfig -a ' \
+               '; ip link set eth0 up ' \
+               '; ifconfig -a ' \
+               '; ( sleep 5 ' \
                     '&& ps axu ' \
                     '&& netstat -puatn & ) ' \
-               '&& docker -D -d -H "tcp://0.0.0.0:2375"' \
+               '; docker -D -d -H "tcp://0.0.0.0:2375"' \
                2>&1 \
              | tee -a docker_daemon.log &
 travis_fold end docker.start
 echo
 
+echo 'Kernel:'
+sudo uname -a
 echo 'Network interfaces:'
 sudo /sbin/ifconfig -a
 echo 'Network status:'
