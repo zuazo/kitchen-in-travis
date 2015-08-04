@@ -90,6 +90,10 @@ echo 'Network status:'
 sudo netstat -puatn
 echo 'Process list:'
 sudo ps axu | grep 'docke[r]'
+echo 'Loaded Kernel Modules:'
+sudo lsmod
+echo 'dmesg:'
+sudo dmesg | tail -50
 echo 'Docker client version:'
 docker --version
 
