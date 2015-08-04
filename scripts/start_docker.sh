@@ -71,14 +71,11 @@ travis_fold start docker.start
   travis_section 'Starting Docker Engine'
   sekexe/run \
                'echo 2000 2500 > /proc/sys/net/ipv4/ip_local_port_range ' \
-               '&& /sbin/ifconfig' \
-               '&& sysctl -w net.ipv6.conf.all.disable_ipv6=1' \
-               '&& sysctl -w net.ipv6.conf.default.disable_ipv6=1' \
-               '&& sysctl -w net.ipv6.conf.lo.disable_ipv6=1' \
+               '&& /sbin/ifconfig -a' \
                '&& ( sleep 5 ' \
                     '&& ps axu ' \
                     '&& netstat -puatn & ) ' \
-               '&& docker -D --ipv6=false -d -H tcp://0.0.0.0:2375' \
+               '&& docker -D -d -H "tcp://0.0.0.0:2375"' \
                2>&1 \
              | tee -a docker_daemon.log &
 travis_fold end docker.start
@@ -86,6 +83,8 @@ echo
 
 echo "DOCKER_HOST=${DOCKER_HOST}"
 echo "DOCKER_PORT_RANGE=${DOCKER_PORT_RANGE}"
+echo 'Network interfaces:'
+sudo /sbin/ifconfig -a
 echo 'Network status:'
 sudo netstat -puatn
 echo 'Process list:'
