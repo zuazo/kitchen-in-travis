@@ -67,6 +67,11 @@ travis_fold start uml.download
 travis_fold end uml.download
 echo
 
+travis_fold start uml.test
+  travis_section 'Testing UML'
+  sekexe/run
+travis_fold end uml.test
+
 travis_fold start docker.start
   travis_section 'Starting Docker Engine'
   sekexe/run \
