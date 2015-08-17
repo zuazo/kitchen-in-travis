@@ -84,9 +84,9 @@ travis_fold start docker.start
                '; ifconfig -a ' \
                '; ulimit -a ' \
                '; ( sleep 5 ' \
-                    '&& echo ===================='
-                    '&& echo DOCKER ENGINE STATUS'
-                    '&& echo ===================='
+                    '&& echo ====================' \
+                    '&& echo DOCKER ENGINE STATUS' \
+                    '&& echo ====================' \
                     '&& ps axu ' \
                     '&& netstat -puatn & ) ' \
                '; docker -D -d -H "tcp://0.0.0.0:2375"' \
