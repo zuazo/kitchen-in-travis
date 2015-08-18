@@ -95,7 +95,10 @@ echo
 
 travis_fold start uml.download
   travis_section 'Downloading User Mode Linux scripts'
-  travis_retry [ -e sekexe ] || git clone git://github.com/cptactionhank/sekexe
+  if ! [ -e sekexe ]
+  then
+    travis_retry git clone git://github.com/cptactionhank/sekexe
+  fi
 travis_fold end uml.download
 echo
 
@@ -141,6 +144,8 @@ echo 'Limits:'
 ulimit -a
 echo 'Limits (root):'
 sudo bash -c 'ulimit -a'
+echo 'ulimit -n:'
+sudo bash -c 'ulimit -n'
 echo 'Limits config:'
 sudo cat /etc/security/limits.conf
 echo 'Network interfaces:'
