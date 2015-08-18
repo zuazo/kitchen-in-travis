@@ -28,9 +28,11 @@ travis_section() {
 travis_fold start env.setup
   travis_section 'Setting environment variables for Docker'
   SLIRP_HOST="$(ip addr | awk '/scope global/ {print $2; exit}' | cut -d/ -f1)"
-  SLIRP_PORTS="$(seq 2000 2500)"
-  DOCKER_HOST="tcp://${SLIRP_HOST}:2375"
-  DOCKER_PORT_RANGE=2400:2500
+  SLIRP_MIN_PORT='2375'
+  SLIRP_MAX_PORT='2400'
+  SLIRP_PORTS="$(seq "${SLIRP_MIN_PORT}" "${SLIRP_MAX_PORT}")"
+  DOCKER_HOST="tcp://${SLIRP_HOST}:${SLIRP_MIN_PORT}"
+  DOCKER_PORT_RANGE="$((SLIRP_MIN_PORT+1)):${SLIRP_MAX_PORT}"
   export SLIRP_HOST DOCKER_HOST DOCKER_PORT_RANGE SLIRP_PORTS
   echo "SLIRP_HOST=${SLIRP_HOST}"
   echo "DOCKER_HOST=${DOCKER_HOST}"
@@ -75,22 +77,21 @@ echo
 travis_fold start docker.start
   travis_section 'Starting Docker Engine'
   sekexe/run \
-               'echo 2000 2500 > /proc/sys/net/ipv4/ip_local_port_range ' \
-               '&& sleep 5 ' \
-               '; uname -a ' \
-               '; ifconfig -a ' \
-               '; ip link set eth0 up ' \
-               '; ifconfig -a ' \
-               '; ifconfig -a ' \
-               '; ulimit -a ' \
-               '; ( sleep 5 ' \
-                    '&& echo ====================' \
-                    '&& echo DOCKER ENGINE STATUS' \
-                    '&& echo ====================' \
-                    '&& ps axu ' \
-                    '&& netstat -puatn & ) ' \
-               '; docker -D -d -H "tcp://0.0.0.0:2375"' \
-               2>&1 \
+    "echo ${SLIRP_MIN_PORT} ${SLIRP_MAX_PORT} > /proc/sys/net/ipv4/ip_local_port_range " \
+    '; echo ====================' \
+    '; echo DOCKER ENGINE START' \
+    '; echo ====================' \
+    '; uname -a ' \
+    '; ifconfig -a ' \
+    '; ulimit -a ' \
+    '; ( sleep 5 ' \
+      '&& echo ====================' \
+      '&& echo DOCKER ENGINE STATUS' \
+      '&& echo ====================' \
+      '&& ps axu ' \
+      '&& netstat -puatn & ) ' \
+    "; docker -D -d -H tcp://0.0.0.0:${SLIRP_MIN_PORT}" \
+    2>&1 \
              | tee -a docker_daemon.log &
 travis_fold end docker.start
 echo
@@ -105,6 +106,11 @@ echo 'Process list:'
 sudo ps axu | grep 'docke[r]'
 echo 'Loaded Kernel Modules:'
 sudo lsmod
+echo 'Limits:'
+ulimit -a
+echo 'Limits (root):'
+sudo bash -c 'ulimit -a'
+echo 'Network interfaces:'
 echo 'dmesg:'
 sudo dmesg | tail -50
 echo 'Docker client version:'
@@ -112,7 +118,7 @@ docker --version
 
 travis_fold start docker.wait
   travis_section 'Waiting for Docker to start'
-  while ! curl "http://${SLIRP_HOST}:2375/info" > /dev/null
+  while ! docker info &> /dev/null
   do
     echo -n .
     sleep 1
