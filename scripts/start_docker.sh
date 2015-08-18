@@ -7,18 +7,48 @@
 # Exit immediately if a simple command exits with a non-zero status
 set -e
 
+# Set USER variable if empty
+USER="${USER:-root}"
+export USER
+
 # Some travis bash functions
-ANSI_YELLOW='\e[33;1m'
+ANSI_RED="${ANSI_RED:-\e[31;1m}"
+ANSI_YELLOW="${ANSY_YELLOW:-\e[33;1m}"
+ANSI_RESET="${ANSI_RESET:-\e[0m}"
 if ! type travis_fold &> /dev/null
 then
-  ANSI_RESET='\e[0m'
-
   travis_fold() {
     local ACTION="${1}"
     local NAME="${2}"
     echo "${NAME} ${ACTION}"
-    [ x"${ACTION}" == x'end' ] && echo
+    if [ x"${ACTION}" == x'end' ]
+    then
+      echo
+    fi
   }
+fi
+if ! type travis_retry &> /dev/null
+then
+  travis_retry() {
+    local RESULT=0
+    local COUNT=1
+    while [ "${COUNT}" -le 3 ]; do
+      if [ "${RESULT}" -ne 0 ]
+      then
+        echo -e "\n${ANSI_RED}The command \"$@\" failed. Retrying, $COUNT of 3.${ANSI_RESET}\n" >&2
+      fi
+      "$@"
+      RESULT="$?"
+      [ "${RESULT}" -eq 0 ] && break
+      COUNT="$(($COUNT + 1))"
+      sleep 1
+    done
+    if [ $COUNT -gt 3 ]
+    then
+      echo -e "\n${ANSI_RED}The command \"$@\" failed 3 times.${ANSI_RESET}\n" >&2
+    fi
+    return $RESULT
+}
 fi
 
 travis_section() {
@@ -65,7 +95,7 @@ echo
 
 travis_fold start uml.download
   travis_section 'Downloading User Mode Linux scripts'
-  travis_retry git clone git://github.com/cptactionhank/sekexe
+  travis_retry [ -e sekexe ] || git clone git://github.com/cptactionhank/sekexe
 travis_fold end uml.download
 echo
 
