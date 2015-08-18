@@ -82,6 +82,7 @@ travis_fold start docker.start
     '; echo DOCKER ENGINE START' \
     '; echo ====================' \
     '; uname -a ' \
+    '; cat /etc/security/limits.conf ' \
     '; ifconfig -a ' \
     '; ulimit -a ' \
     '; ( sleep 5 ' \
@@ -110,6 +111,8 @@ echo 'Limits:'
 ulimit -a
 echo 'Limits (root):'
 sudo bash -c 'ulimit -a'
+echo 'Limits config:'
+sudo cat /etc/security/limits.conf
 echo 'Network interfaces:'
 echo 'dmesg:'
 sudo dmesg | tail -50
