@@ -11,6 +11,9 @@ set -e
 USER="${USER:-root}"
 export USER
 
+# Whether to use docker Unix socker or TCP
+USE_DOCKER_UNIX_SOCKET="${USE_DOCKER_UNIX_SOCKET:-true}"
+
 # Some travis bash functions
 ANSI_RED="${ANSI_RED:-\e[31;1m}"
 ANSI_YELLOW="${ANSY_YELLOW:-\e[33;1m}"
@@ -57,15 +60,25 @@ travis_section() {
 
 travis_fold start env.setup
   travis_section 'Setting environment variables for Docker'
+  LOGDIR="/tmp/log.$$"
   SLIRP_HOST="$(ip addr | awk '/scope global/ {print $2; exit}' | cut -d/ -f1)"
   SLIRP_MIN_PORT='2375'
   SLIRP_MAX_PORT='2400'
   SLIRP_PORTS="$(seq "${SLIRP_MIN_PORT}" "${SLIRP_MAX_PORT}")"
-  DOCKER_HOST="tcp://${SLIRP_HOST}:${SLIRP_MIN_PORT}"
+  if ${USE_DOCKER_UNIX_SOCKET}
+  then
+    DOCKER_HOST="unix://${LOGDIR}/docker.sock"
+    DOCKER_HOST_UML='unix:///var/log/docker.sock'
+  else
+    DOCKER_HOST="tcp://${SLIRP_HOST}:${SLIRP_MIN_PORT}"
+    DOCKER_HOST_UML="tcp://0.0.0.0:${SLIRP_MIN_PORT}"
+  fi
   DOCKER_PORT_RANGE="$((SLIRP_MIN_PORT+1)):${SLIRP_MAX_PORT}"
-  export SLIRP_HOST DOCKER_HOST DOCKER_PORT_RANGE SLIRP_PORTS
+  export LOGDIR SLIRP_HOST DOCKER_HOST DOCKER_PORT_RANGE SLIRP_PORTS
+  echo "LOGDIR=${LOGDIR}"
   echo "SLIRP_HOST=${SLIRP_HOST}"
   echo "DOCKER_HOST=${DOCKER_HOST}"
+  echo "DOCKER_HOST_UML=${DOCKER_HOST_UML}"
   echo "DOCKER_PORT_RANGE=${DOCKER_PORT_RANGE}"
 travis_fold end env.setup
 echo
@@ -90,6 +103,7 @@ travis_fold start docker.install
   sudo apt-get -y update
   sudo apt-get -y install lxc lxc-docker slirp
   sudo sudo usermod -aG docker "${USER}"
+  sudo service docker stop || true
 travis_fold end docker.install
 echo
 
@@ -97,62 +111,20 @@ travis_fold start uml.download
   travis_section 'Downloading User Mode Linux scripts'
   if ! [ -e sekexe ]
   then
-    travis_retry git clone git://github.com/cptactionhank/sekexe
+    travis_retry git clone -b unix-socket https://github.com/zuazo-forks/sekexe.git
   fi
 travis_fold end uml.download
 echo
 
-#travis_fold start uml.test
-#  travis_section 'Testing UML'
-#  sekexe/run
-#travis_fold end uml.test
-
 travis_fold start docker.start
   travis_section 'Starting Docker Engine'
+  sudo chown -R "${USER}" /etc/docker
   sekexe/run \
     "echo ${SLIRP_MIN_PORT} ${SLIRP_MAX_PORT} > /proc/sys/net/ipv4/ip_local_port_range " \
-    '; echo ====================' \
-    '; echo DOCKER ENGINE START' \
-    '; echo ====================' \
-    '; uname -a ' \
-    '; cat /etc/security/limits.conf ' \
-    '; ifconfig -a ' \
-    '; ulimit -a ' \
-    '; ( sleep 5 ' \
-      '&& echo ====================' \
-      '&& echo DOCKER ENGINE STATUS' \
-      '&& echo ====================' \
-      '&& ps axu ' \
-      '&& netstat -puatn & ) ' \
-    "; docker -D -d -H tcp://0.0.0.0:${SLIRP_MIN_PORT}" \
-    2>&1 \
-             | tee -a docker_daemon.log &
+    "&& docker -D -d -H ${DOCKER_HOST_UML}" \
+    2>&1 | tee -a docker_daemon.log &
 travis_fold end docker.start
 echo
-
-echo 'Kernel:'
-sudo uname -a
-echo 'Network interfaces:'
-sudo /sbin/ifconfig -a
-echo 'Network status:'
-sudo netstat -puatn
-echo 'Process list:'
-sudo ps axu | grep 'docke[r]'
-echo 'Loaded Kernel Modules:'
-sudo lsmod
-echo 'Limits:'
-ulimit -a
-echo 'Limits (root):'
-sudo bash -c 'ulimit -a'
-echo 'ulimit -n:'
-sudo bash -c 'ulimit -n'
-echo 'Limits config:'
-sudo cat /etc/security/limits.conf
-echo 'Network interfaces:'
-echo 'dmesg:'
-sudo dmesg | tail -50
-echo 'Docker client version:'
-docker --version
 
 travis_fold start docker.wait
   travis_section 'Waiting for Docker to start'
