@@ -120,18 +120,20 @@ travis_fold start docker.start
   travis_section 'Starting Docker Engine'
   sudo chown -R "${USER}" /etc/docker
   sekexe/run \
-    "echo ${SLIRP_MIN_PORT} ${SLIRP_MAX_PORT} > /proc/sys/net/ipv4/ip_local_port_range " \
-    "&& docker -D -d -H ${DOCKER_HOST_UML}" \
+    "echo ${SLIRP_MIN_PORT} ${SLIRP_MAX_PORT} > /proc/sys/net/ipv4/ip_local_port_range && docker -D -d -H ${DOCKER_HOST_UML}" \
     2>&1 | tee -a docker_daemon.log &
 travis_fold end docker.start
 echo
 
 travis_fold start docker.wait
   travis_section 'Waiting for Docker to start'
+  TIME=0
   while ! docker info &> /dev/null
   do
+    [ "${TIME}" -gt 60 ] && exit 1
     echo -n .
     sleep 1
+    TIME="$((TIME+1))"
   done
 travis_fold end docker.wait
 echo
