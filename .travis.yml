@@ -12,7 +12,7 @@ env:
 bundler_args: --without vagrant
 
 before_script:
-- source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/fix-travis-201508/scripts/start_docker.sh)
+- source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/fix-travis-201508-sudo/scripts/start_docker.sh)
 
 script:
 - bundle exec rake integration:docker

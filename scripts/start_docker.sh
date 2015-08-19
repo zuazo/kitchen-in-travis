@@ -90,6 +90,7 @@ travis_fold start docker.install
   sudo apt-get -y update
   sudo apt-get -y install lxc lxc-docker slirp
   sudo sudo usermod -aG docker "${USER}"
+  sudo service docker stop || true
 travis_fold end docker.install
 echo
 
@@ -102,57 +103,13 @@ travis_fold start uml.download
 travis_fold end uml.download
 echo
 
-#travis_fold start uml.test
-#  travis_section 'Testing UML'
-#  sekexe/run
-#travis_fold end uml.test
-
 travis_fold start docker.start
   travis_section 'Starting Docker Engine'
-  sekexe/run \
-    "echo ${SLIRP_MIN_PORT} ${SLIRP_MAX_PORT} > /proc/sys/net/ipv4/ip_local_port_range " \
-    '; echo ====================' \
-    '; echo DOCKER ENGINE START' \
-    '; echo ====================' \
-    '; uname -a ' \
-    '; cat /etc/security/limits.conf ' \
-    '; ifconfig -a ' \
-    '; ulimit -a ' \
-    '; ( sleep 5 ' \
-      '&& echo ====================' \
-      '&& echo DOCKER ENGINE STATUS' \
-      '&& echo ====================' \
-      '&& ps axu ' \
-      '&& netstat -puatn & ) ' \
-    "; docker -D -d -H tcp://0.0.0.0:${SLIRP_MIN_PORT}" \
-    2>&1 \
-             | tee -a docker_daemon.log &
+  echo "sekexe/run \"echo ${SLIRP_MIN_PORT} ${SLIRP_MAX_PORT} > /proc/sys/net/ipv4/ip_local_port_range ; docker -D -d -H tcp://0.0.0.0:${SLIRP_MIN_PORT}\"" > run-uml.sh
+  chmod +x run-uml.sh
+  sudo -E ./run-uml.sh 2>&1 | tee -a docker_daemon.log &
 travis_fold end docker.start
 echo
-
-echo 'Kernel:'
-sudo uname -a
-echo 'Network interfaces:'
-sudo /sbin/ifconfig -a
-echo 'Network status:'
-sudo netstat -puatn
-echo 'Process list:'
-sudo ps axu | grep 'docke[r]'
-echo 'Loaded Kernel Modules:'
-sudo lsmod
-echo 'Limits:'
-ulimit -a
-echo 'Limits (root):'
-sudo bash -c 'ulimit -a'
-echo 'ulimit -n:'
-sudo bash -c 'ulimit -n'
-echo 'Limits config:'
-sudo cat /etc/security/limits.conf
-echo 'Network interfaces:'
-echo 'dmesg:'
-sudo dmesg | tail -50
-echo 'Docker client version:'
-docker --version
 
 travis_fold start docker.wait
   travis_section 'Waiting for Docker to start'
