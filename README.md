@@ -235,7 +235,7 @@ describe port(80) do
 end
 ```
 
-You can ensure that `netstat` is properly installed running the `netstat` cookbook:
+You can ensure that `netstat` is properly installed running the [`netstat`](https://supermarket.chef.io/cookbooks/netstat) cookbook:
 
  ```yaml
 # .kitchen.docker.yml
