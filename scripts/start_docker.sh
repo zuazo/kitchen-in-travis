@@ -15,6 +15,7 @@ SLIRP_PORTS=$(seq 2000 2500)
 export HOST_IP DOCKER_HOST DOCKER_PORT_RANGE SLIRP_PORTS
 
 echo 'Installing cURL'
+sudo apt-get -y update
 sudo apt-get install -y ca-certificates curl
 echo ''
 
