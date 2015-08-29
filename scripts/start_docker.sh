@@ -14,6 +14,10 @@ DOCKER_PORT_RANGE=2400:2500
 SLIRP_PORTS=$(seq 2000 2500)
 export HOST_IP DOCKER_HOST DOCKER_PORT_RANGE SLIRP_PORTS
 
+echo 'Installing wget'
+sudo apt-get install -y ca-certificates wget
+echo ''
+
 echo 'Installing docker repository'
 wget -qO- https://get.docker.io/gpg | sudo apt-key add -
 echo 'deb https://get.docker.io/ubuntu docker main' | sudo tee /etc/apt/sources.list.d/docker.list
