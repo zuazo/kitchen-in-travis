@@ -101,7 +101,7 @@ The *.travis.yml* file example:
 
 ```yaml
 rvm:
-- 2.0
+- 2.0.0
 - 2.1
 - 2.2
 
@@ -156,7 +156,7 @@ Then, you can use the following *.travis.yml* file:
 
 ```yaml
 rvm:
-- 2.0
+- 2.0.0
 - 2.1
 - 2.2
 
