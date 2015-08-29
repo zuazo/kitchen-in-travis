@@ -19,7 +19,7 @@ sudo apt-get install -y ca-certificates wget
 echo ''
 
 echo 'Installing docker repository'
-wget --secure-protocol=TLSv1 O- https://get.docker.io/gpg
+wget --secure-protocol=TLSv1 -O- https://get.docker.io/gpg
 wget --secure-protocol=TLSv1 -qO- https://get.docker.io/gpg | sudo apt-key add -
 echo 'deb https://get.docker.io/ubuntu docker main' | sudo tee /etc/apt/sources.list.d/docker.list
 echo ''
