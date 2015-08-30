@@ -201,7 +201,7 @@ You can use alternative images that include systemd. These containers must run i
     # https://registry.hub.docker.com/u/milcom/centos7-systemd/dockerfile/
     image: milcom/centos7-systemd
     privileged: true
-- name: systemd
+- name: fedora
   driver_config:
     image: fedora/systemd-systemd
     privileged: true
