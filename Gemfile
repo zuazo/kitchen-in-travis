@@ -16,5 +16,5 @@ group :vagrant do
 end
 
 group :docker do
-  gem 'kitchen-docker', '~> 2.1.0'
+  gem 'kitchen-docker', '~> 2.1'
 end
