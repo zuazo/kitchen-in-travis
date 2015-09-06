@@ -5,10 +5,6 @@ rvm:
 
 sudo: true
 
-env:
-  global:
-  - KITCHEN_LOCAL_YAML=.kitchen.docker.yml
-
 bundler_args: --without vagrant
 
 before_script:

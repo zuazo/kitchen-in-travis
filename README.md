@@ -132,7 +132,7 @@ This will be enough if you want to test only 2 or 3 platforms. If you want more,
 
 ### How to Run Tests in Many Platforms
 
-Travis CI has a build time limitation of **50 minutes**. If you want to test many platforms, you will need to split up the tests in multiple Travis CI builds. For those cases, I recommend you to use a simple *Rakefile* Rake task similar to the following:
+Travis CI has a build time limitation of **50 minutes**. If you want to test many platforms, you will need to split up the tests in multiple Travis CI builds. For those cases, I recommend you to use a *Rakefile* Rake task similar to the following:
 
 ```ruby
 # Rakefile
@@ -142,15 +142,57 @@ require 'bundler/setup'
 
 desc 'Run Test Kitchen integration tests'
 namespace :integration do
-  desc 'Run Test Kitchen integration tests using docker'
-  task :docker do
-    ENV['KITCHEN_LOCAL_YAML'] = '.kitchen.docker.yml'
-    sh "kitchen test #{ENV['KITCHEN_ARGS']} #{ENV['KITCHEN_REGEXP']}"
+  # Generates the `Kitchen::Config` class configuration values.
+  #
+  # @param loader_config [Hash] loader configuration options.
+  # @return [Hash] configuration values for the `Kitchen::Config` class.
+  def kitchen_config(loader_config = {})
+    {}.tap do |config|
+      unless loader_config.empty?
+        @loader = Kitchen::Loader::YAML.new(loader_config)
+        config[:loader] = @loader
+      end
+    end
+  end
+
+  # Gets a collection of instances.
+  #
+  # @param regexp [String] regular expression to match against instance names.
+  # @param config [Hash] configuration values for the `Kitchen::Config` class.
+  # @return [Collection<Instance>] all instances.
+  def kitchen_instances(regexp, config)
+    instances = Kitchen::Config.new(config).instances
+    return instances if regexp.nil? || regexp == 'all'
+    instances.get_all(Regexp.new(regexp))
+  end
+
+  # Runs a test kitchen action against some instances.
+  #
+  # @param action [String] kitchen action to run (defaults to `'test'`).
+  # @param regexp [String] regular expression to match against instance names.
+  # @param loader_config [Hash] loader configuration options.
+  # @return void
+  def run_kitchen(action, regexp, loader_config = {})
+    action = 'test' if action.nil?
+    require 'kitchen'
+    Kitchen.logger = Kitchen.default_file_logger
+    config = kitchen_config(loader_config)
+    kitchen_instances(regexp, config).each { |i| i.send(action) }
+  end
+
+  desc 'Run integration tests with kitchen-vagrant'
+  task :vagrant, [:regexp, :action] do |_t, args|
+    run_kitchen(args.action, args.regexp)
+  end
+
+  desc 'Run integration tests with kitchen-docker'
+  task :docker, [:regexp, :action] do |_t, args|
+    run_kitchen(args.action, args.regexp, local_config: '.kitchen.docker.yml')
   end
 end
 ```
 
-This will allow us to run different kitchen tests using the `KITCHEN_REGEXP` environment variable and tweak some arguments using the `KITCHEN_ARGS` environment variable.
+This will allow us to run different kitchen tests using the `$ rake integration:docker[REGEXP]` command.
 
 Then, you can use the following *.travis.yml* file:
 
@@ -163,8 +205,6 @@ rvm:
 sudo: true
 
 env:
-  global:
-  - KITCHEN_ARGS="--destroy=always"
   matrix:
 # Split up the test-kitchen run to avoid exceeding 50 minutes:
   - KITCHEN_REGEXP=centos
@@ -175,7 +215,7 @@ before_script:
 - source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/0.3.0/scripts/start_docker.sh)
 
 script:
-- bundle exec rake integration:docker
+- bundle exec rake integration:docker[$KITCHEN_REGEXP]
 ```
 
 ## Known Issues
