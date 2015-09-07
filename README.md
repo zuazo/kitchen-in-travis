@@ -228,6 +228,8 @@ script:
 
 * [dhcp](https://github.com/chef-brigade/dhcp-cookbook) cookbook ([*.travis.yml*](https://github.com/chef-brigade/dhcp-cookbook/blob/master/.travis.yml), [*.kitchen.docker.yml*](https://github.com/chef-brigade/dhcp-cookbook/blob/master/.kitchen.docker.yml), [*Rakefile*](https://github.com/chef-brigade/dhcp-cookbook/blob/master/Rakefile)): Runs kitchen tests in different Travis builds separated by distribution. Includes Serverspec and bats tests.
 
+* [onddo_proftpd](https://github.com/onddo/proftpd-cookbook) cookbook ([*.travis.yml*](https://github.com/onddo/proftpd-cookbook/blob/master/.travis.yml), [*.kitchen.docker.yml*](https://github.com/onddo/proftpd-cookbook/blob/master/.kitchen.docker.yml), [*Rakefile*](https://github.com/onddo/proftpd-cookbook/blob/master/Rakefile)): Runs kitchen tests in 9 different Travis builds. Includes Serverspec tests.
+
 ## Known Issues
 
 ### The Test Cannot Exceed 50 Minutes
