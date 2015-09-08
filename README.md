@@ -71,7 +71,7 @@ platforms:
 
 If not defined, it will get the platforms from the main `.kitchen.yml` by default.
 
-You can get the list of the platforms officially supported by Docker [here](https://registry.hub.docker.com/repos/library).
+You can get the list of the platforms officially supported by Docker [here](https://hub.docker.com/explore/).
 
 Then, I recommend you to create a task in your *Rakefile*:
 
