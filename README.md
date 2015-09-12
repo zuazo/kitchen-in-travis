@@ -116,7 +116,7 @@ before_script:
 - source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/0.3.0/scripts/start_docker.sh)
 
 script:
-- bundle exec rake integration:docker
+- travis_retry bundle exec rake integration:docker
 ```
 
 If you are using a *Gemfile*, you can add the following to it:
@@ -147,19 +147,6 @@ require 'bundler/setup'
 
 desc 'Run Test Kitchen integration tests'
 namespace :integration do
-  # Generates the `Kitchen::Config` class configuration values.
-  #
-  # @param loader_config [Hash] loader configuration options.
-  # @return [Hash] configuration values for the `Kitchen::Config` class.
-  def kitchen_config(loader_config = {})
-    {}.tap do |config|
-      unless loader_config.empty?
-        @loader = Kitchen::Loader::YAML.new(loader_config)
-        config[:loader] = @loader
-      end
-    end
-  end
-
   # Gets a collection of instances.
   #
   # @param regexp [String] regular expression to match against instance names.
@@ -181,7 +168,7 @@ namespace :integration do
     action = 'test' if action.nil?
     require 'kitchen'
     Kitchen.logger = Kitchen.default_file_logger
-    config = kitchen_config(loader_config)
+    config = { loader: Kitchen::Loader::YAML.new(loader_config) }
     kitchen_instances(regexp, config).each { |i| i.send(action) }
   end
 
@@ -220,7 +207,7 @@ before_script:
 - source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/0.3.0/scripts/start_docker.sh)
 
 script:
-- bundle exec rake integration:docker[$KITCHEN_REGEXP]
+- travis_retry bundle exec rake integration:docker[$KITCHEN_REGEXP]
 ```
 
 ## Real-world Examples
