@@ -32,7 +32,7 @@ This example cookbook only installs nginx. It also includes some [Serverspec](ht
 
 ## Related Projects
 
-* [kitchen-in-travis-native](https://github.com/zuazo/kitchen-in-travis-native): Run test-kitchen inside Travis CI using the [native Docker service](http://blog.travis-ci.com/2015-08-19-using-docker-on-travis-ci/) and kitchen-docker. The builds are faster (~2 mins to start), but a little less customizable.
+* [kitchen-in-travis-native](https://github.com/zuazo/kitchen-in-travis-native): Runs test-kitchen inside Travis CI using the [native Docker service](http://blog.travis-ci.com/2015-08-19-using-docker-on-travis-ci/) and kitchen-docker. The builds are faster (~2 mins to start), but a little less customizable.
 * [kitchen-in-circleci](https://github.com/zuazo/kitchen-in-circleci): Runs test-kitchen inside [CircleCI](https://circleci.com/).
 
 ## Install the Requirements
