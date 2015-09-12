@@ -30,6 +30,11 @@ The following files will help you understand how this works:
 
 This example cookbook only installs nginx. It also includes some [Serverspec](http://serverspec.org/) tests to check everything is working correctly.
 
+## Related Projects
+
+* [kitchen-in-travis-native](https://github.com/zuazo/kitchen-in-travis-native): Run test-kitchen inside Travis CI using the [native Docker service](http://blog.travis-ci.com/2015-08-19-using-docker-on-travis-ci/) and kitchen-docker. The builds are faster (~2 mins to start), but a little less customizable.
+* [kitchen-in-circleci](https://github.com/zuazo/kitchen-in-circleci): Runs test-kitchen inside [CircleCI](https://circleci.com/).
+
 ## Install the Requirements
 
 First you need to install [Docker](https://docs.docker.com/installation/).
@@ -314,6 +319,45 @@ If you get this error on Travis CI, avoid passing the `--concurrency` option to 
 ### Travis CI Error: *No output has been received in the last 10 minutes*
 
 If a command can take a long time to run and is very quiet, you may need to run it with some flags to increase verbosity such as: `--verbose`, `--debug`, `--l debug`, ...
+
+### Travis CI Error: Waiting Docker to Start Timeout (*No output has been received in the last 10 minutes*)
+
+UML does not seem to work properly on some projects. The Travis build output in these cases:
+
+```
+$ source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/0.3.0/scripts/start_docker.sh)
+[...]
+Starting Docker Engine
+Waiting Docker to start
+
+No output has been received in the last 10 minutes, this potentially indicates a stalled build or something wrong with the build itself.
+```
+
+Try using [kitchen-in-travis-native](https://github.com/zuazo/kitchen-in-travis-native) or [kitchen-in-circleci](https://github.com/zuazo/kitchen-in-circleci) if you encounter this problem.
+
+#### *Travis CI Error: Waiting Docker to Start Timeout* Debug Information
+
+On some project builds [SLIRP](http://slirp.sourceforge.net/http://slirp.sourceforge.net/) seems not to work correctly. This is the exact error in the UML boot process:
+
+```
+$ ip link set eth0 up
+RTNETLINK answers: No such file or directory
+```
+
+But the interface exists:
+
+```
+eth0      Link encap:Serial Line IP
+          inet addr:10.1.1.1  Mask:255.255.255.0
+          NOARP  MTU:1500  Metric:1
+          RX packets:0 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
+          collisions:0 txqueuelen:256
+          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+          Interrupt:5
+```
+
+I have not found a way to fix the problem. Please, [let me know](https://github.com/zuazo/kitchen-in-travis/issues/new?title=Fix%20Waiting%20Docker%20to%20Start%20Timeout%20Error) if you find a solution.
 
 ## Feedback Is Welcome
 
