@@ -1,4 +1,4 @@
-kitchen-in-travis Cookbook [![Build Status](http://img.shields.io/travis/zuazo/kitchen-in-travis/0.3.0.svg?style=flat)](https://travis-ci.org/zuazo/kitchen-in-travis)
+kitchen-in-travis Cookbook [![Build Status](https://travis-ci.org/zuazo/kitchen-in-travis.svg?branch=master)](https://travis-ci.org/zuazo/kitchen-in-travis)
 ==========================
 
 Proof of concept cookbook to run [test-kitchen](http://kitchen.ci/) inside [Travis CI](https://travis-ci.org/) using [kitchen-docker](https://github.com/portertech/kitchen-docker) in [User Mode Linux](https://github.com/jpetazzo/sekexe).
