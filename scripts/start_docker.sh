@@ -25,8 +25,8 @@ echo 'deb https://get.docker.io/ubuntu docker main' | sudo tee /etc/apt/sources.
 echo ''
 
 echo "Reinstall AppArmor (Could not open 'tunables/global')"
-sudo apt-get --reinstall install apparmor
-sudo touch /etc/apparmor.d/tunables/global
+sudo apt-get -o Dpkg::Options::="--force-confnew --force-confmiss" --reinstall install apparmor
+# sudo touch /etc/apparmor.d/tunables/global
 echo ''
 
 echo 'Prevent APT starting any service'
