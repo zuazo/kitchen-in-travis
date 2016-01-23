@@ -24,6 +24,10 @@ curl https://get.docker.com/gpg | sudo apt-key add -
 echo 'deb https://get.docker.io/ubuntu docker main' | sudo tee /etc/apt/sources.list.d/docker.list
 echo ''
 
+echo "Reinstall AppArmor (Could not open 'tunables/global')"
+sudo apt-get -o Dpkg::Options::=--force-confnew -o Dpkg::Options::=--force-confmiss --reinstall install apparmor
+echo ''
+
 echo 'Prevent APT starting any service'
 echo exit 101 | sudo tee /usr/sbin/policy-rc.d
 sudo chmod +x /usr/sbin/policy-rc.d
