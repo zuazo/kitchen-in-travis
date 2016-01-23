@@ -29,6 +29,10 @@ echo exit 101 | sudo tee /usr/sbin/policy-rc.d
 sudo chmod +x /usr/sbin/policy-rc.d
 echo ''
 
+echo "Reinstall AppArmor (Could not open 'tunables/global')"
+sudo apt-get --reinstall install apparmor
+echo ''
+
 echo 'Installing Docker'
 sudo apt-get -y update
 sudo apt-get -y install lxc lxc-docker slirp
