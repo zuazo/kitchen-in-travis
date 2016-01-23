@@ -4,7 +4,7 @@
 source 'https://rubygems.org'
 
 gem 'rake'
-gem 'berkshelf', '~> 3.3'
+gem 'berkshelf', '~> 4.0'
 
 group :integration do
   gem 'test-kitchen', '~> 1.2'
