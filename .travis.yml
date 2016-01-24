@@ -8,7 +8,7 @@ sudo: true
 bundler_args: --without='vagrant'
 
 before_script:
-- source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/master/scripts/start_docker.sh)
+- source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/fix-travis-201601-2/scripts/start_docker.sh)
 
 script:
 - travis_retry bundle exec rake integration:docker
