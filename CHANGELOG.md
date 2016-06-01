@@ -3,6 +3,10 @@ kitchen-in-travis CHANGELOG
 
 This file is used to list changes made in each version of the `kitchen-in-travis` cookbook.
 
+## v0.5.0 (2016-06-01)
+
+* Fix *Installing new version of config file /etc/bash_completion.d/lxc* error (issues [#2](https://github.com/zuazo/kitchen-in-travis/issues/2) and [#3](https://github.com/zuazo/kitchen-in-travis/pull/3), thanks [Pedro Salgado](https://github.com/steenzout)).
+
 ## v0.4.0 (2016-01-24)
 
 * Update Berkshelf to version `4`.

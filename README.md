@@ -12,7 +12,7 @@ rvm:
 sudo: true
 
 before_script:
-- source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/0.4.0/scripts/start_docker.sh)
+- source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/0.5.0/scripts/start_docker.sh)
 
 script:
 # Run test-kitchen with docker driver, for example:
@@ -113,7 +113,7 @@ rvm:
 sudo: true
 
 before_script:
-- source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/0.4.0/scripts/start_docker.sh)
+- source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/0.5.0/scripts/start_docker.sh)
 
 script:
 - travis_retry bundle exec rake integration:docker
@@ -204,7 +204,7 @@ env:
   - KITCHEN_REGEXP=ubuntu
 
 before_script:
-- source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/0.4.0/scripts/start_docker.sh)
+- source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/0.5.0/scripts/start_docker.sh)
 
 script:
 - travis_retry bundle exec rake integration:docker[$KITCHEN_REGEXP]
@@ -310,7 +310,7 @@ If a command can take a long time to run and is very quiet, you may need to run 
 UML does not seem to work properly on some projects. The Travis build output in these cases:
 
 ```
-$ source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/0.4.0/scripts/start_docker.sh)
+$ source <(curl -sL https://raw.githubusercontent.com/zuazo/kitchen-in-travis/0.5.0/scripts/start_docker.sh)
 [...]
 Starting Docker Engine
 Waiting Docker to start
