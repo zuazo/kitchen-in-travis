@@ -97,7 +97,7 @@ echo
 travis_fold start docker.install
   travis_section 'Installing Docker'
   sudo apt-get -y update
-  sudo apt-get -y install lxc lxc-docker slirp
+  sudo apt-get -y install -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confnew" lxc lxc-docker slirp
   sudo usermod -aG docker "${USER}"
   sudo service docker stop || true
 travis_fold end docker.install
