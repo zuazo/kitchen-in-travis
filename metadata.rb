@@ -7,6 +7,6 @@ Cookbook example to run test-kitchen inside Travis CI using kitchen-docker in
 User Mode Linux.
 EOH
 long_description IO.read(File.join(File.dirname(__FILE__), 'README.md'))
-version '0.5.0'
+version '0.6.0' # WiP
 
 depends 'nginx', '~> 2.7'
