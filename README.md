@@ -210,6 +210,38 @@ script:
 - travis_retry bundle exec rake integration:docker[$KITCHEN_REGEXP]
 ```
 
+### Test multiple versions of Chef
+
+If you'd like to test multiple versions of Chef, you can use a [second environment variable in `.travis.yml`](https://docs.travis-ci.com/user/environment-variables/#Defining-Multiple-Variables-per-Item) combined with the [`require_chef_omnibus` property in `.kitchen.yml`](https://docs.chef.io/config_yml_kitchen.html#provisioner-settings).
+
+```yaml
+# .travis.yml
+# ...
+
+env:
+- KITCHEN_REGEXP=centos
+- KITCHEN_REGEXP=centos CHEF_OMNIBUS_VERSION=12.10
+- KITCHEN_REGEXP=centos CHEF_OMNIBUS_VERSION=12.8
+- KITCHEN_REGEXP=ubuntu
+- KITCHEN_REGEXP=ubuntu CHEF_OMNIBUS_VERSION=12.10
+- KITCHEN_REGEXP=ubuntu CHEF_OMNIBUS_VERSION=12.8
+
+# ...
+```
+
+```yaml
+# .kitchen.yml
+# ...
+
+provisioner:
+  name: chef_zero
+  require_chef_omnibus: <%= ENV.fetch('CHEF_OMNIBUS_VERSION', true) %>
+
+# ...
+```
+
+When `require_chef_omnibus` is set to `true`, test-kitchen will build with the latest version of chef. Specifying a version in the form `x.y` as shown above will get the latest patch version of the minor version specified (`~> x.y.0`).
+
 ## Real-world Examples
 
 * [netstat](https://github.com/zuazo/netstat-cookbook) cookbook ([*.travis.yml*](https://github.com/zuazo/netstat-cookbook/blob/master/.travis.yml), [*.kitchen.docker.yml*](https://github.com/zuazo/netstat-cookbook/blob/master/.kitchen.docker.yml), [*Rakefile*](https://github.com/zuazo/netstat-cookbook/blob/master/Rakefile)): Runs kitchen tests against many platforms. Includes a minimal Serverspec test.
@@ -365,9 +397,9 @@ See [here](https://github.com/zuazo/docker-in-travis#acknowledgements).
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
-    
+
         http://www.apache.org/licenses/LICENSE-2.0
-    
+
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
