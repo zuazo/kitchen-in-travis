@@ -222,6 +222,38 @@ rake integration:docker[regexp,action,concurrency]   # Run integration tests wit
 rake integration:vagrant[regexp,action,concurrency]  # Run integration tests with kitchen-vagrant
 ```
 
+### Test multiple versions of Chef
+
+If you'd like to test multiple versions of Chef, you can use a [second environment variable in `.travis.yml`](https://docs.travis-ci.com/user/environment-variables/#Defining-Multiple-Variables-per-Item) combined with the [`require_chef_omnibus` property in `.kitchen.yml`](https://docs.chef.io/config_yml_kitchen.html#provisioner-settings).
+
+```yaml
+# .travis.yml
+# ...
+
+env:
+- KITCHEN_REGEXP=centos
+- KITCHEN_REGEXP=centos CHEF_OMNIBUS_VERSION=12.10
+- KITCHEN_REGEXP=centos CHEF_OMNIBUS_VERSION=12.8
+- KITCHEN_REGEXP=ubuntu
+- KITCHEN_REGEXP=ubuntu CHEF_OMNIBUS_VERSION=12.10
+- KITCHEN_REGEXP=ubuntu CHEF_OMNIBUS_VERSION=12.8
+
+# ...
+```
+
+```yaml
+# .kitchen.yml
+# ...
+
+provisioner:
+  name: chef_zero
+  require_chef_omnibus: <%= ENV.fetch('CHEF_OMNIBUS_VERSION', true) %>
+
+# ...
+```
+
+When `require_chef_omnibus` is set to `true`, test-kitchen will build with the latest version of chef. Specifying a version in the form `x.y` as shown above will get the latest patch version of the minor version specified (`~> x.y.0`).
+
 ## Real-world Examples
 
 * [netstat](https://github.com/zuazo/netstat-cookbook) cookbook ([*.travis.yml*](https://github.com/zuazo/netstat-cookbook/blob/master/.travis.yml), [*.kitchen.docker.yml*](https://github.com/zuazo/netstat-cookbook/blob/master/.kitchen.docker.yml), [*Rakefile*](https://github.com/zuazo/netstat-cookbook/blob/master/Rakefile)): Runs kitchen tests against many platforms. Includes a minimal Serverspec test.
