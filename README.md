@@ -210,6 +210,18 @@ script:
 - travis_retry bundle exec rake integration:docker[$KITCHEN_REGEXP]
 ```
 
+### Test multiple kitchen instances concurrently per build
+
+Sometimes it may be quicker to test multiple kitchen-docker instances in each Travis build due to a limit of concurrent builds (due to total Travis system load), rather than split out to a separate build for every kitchen-docker instance. The key is to find the balance between the number of kitchen-docker instances per Travis build.
+
+[`Rakefile.concurrency`](./Rakefile.concurrency) provides rake tasks that can run actions against multiple test-kitchen instances simultaneously:
+
+```shell
+$ bundle exec rake --rakefile Rakefile.concurrency --tasks
+rake integration:docker[regexp,action,concurrency]   # Run integration tests with kitchen-docker
+rake integration:vagrant[regexp,action,concurrency]  # Run integration tests with kitchen-vagrant
+```
+
 ## Real-world Examples
 
 * [netstat](https://github.com/zuazo/netstat-cookbook) cookbook ([*.travis.yml*](https://github.com/zuazo/netstat-cookbook/blob/master/.travis.yml), [*.kitchen.docker.yml*](https://github.com/zuazo/netstat-cookbook/blob/master/.kitchen.docker.yml), [*Rakefile*](https://github.com/zuazo/netstat-cookbook/blob/master/Rakefile)): Runs kitchen tests against many platforms. Includes a minimal Serverspec test.
@@ -365,9 +377,9 @@ See [here](https://github.com/zuazo/docker-in-travis#acknowledgements).
     Licensed under the Apache License, Version 2.0 (the "License");
     you may not use this file except in compliance with the License.
     You may obtain a copy of the License at
-    
+
         http://www.apache.org/licenses/LICENSE-2.0
-    
+
     Unless required by applicable law or agreed to in writing, software
     distributed under the License is distributed on an "AS IS" BASIS,
     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
