@@ -403,6 +403,7 @@ See [here](https://github.com/zuazo/docker-in-travis#acknowledgements).
 | **Author:**          | [Xabier de Zuazo](https://github.com/zuazo) (<xabier@zuazo.org>)
 | **Contributor:**     | [Jacob McCann](https://github.com/jmccann)
 | **Contributor:**     | [Pedro Salgado](https://github.com/steenzout)
+| **Contributor:**     | [Austin Heiman](https://github.com/atheiman)
 | **Copyright:**       | Copyright (c) 2015-2016, Xabier de Zuazo
 | **License:**         | Apache License, Version 2.0
 
